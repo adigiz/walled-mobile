@@ -1,10 +1,37 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, TextInput, Image, Text } from "react-native";
 import Button from "../components/Button";
-import Input from "../components/Input";
 import { Link } from "expo-router";
+import { z } from "zod";
+import { useState } from "react";
+
+const LoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(8, { message: "Must be 8 or more characters long" }),
+});
 
 export default function App() {
+  const [form, setForm] = useState({});
+  const [errorMsg, setErrors] = useState({});
+  
+  handleInputChange = (key, value) => {
+    setErrors({ ...errorMsg, [key]: ""})
+    setForm({ ...form, [key]: value });
+  };
+
+  handleSubmit = () => {
+    try {
+      LoginSchema.parse(form);
+    } catch (err) {
+      const validation = err.errors;
+      const errors = {};
+      validation.map((item) => {
+        const key = item.path[0];
+        errors[key] = item.message;
+      });
+      setErrors(errors);
+    }
+  };
   return (
     <View style={styles.container}>
       <Image
@@ -12,24 +39,26 @@ export default function App() {
         style={styles.logo}
         resizeMode="stretch"
       />
-
       <TextInput
         style={styles.input}
         placeholder="Email"
         placeholderTextColor="#aaa"
         keyboardType="email-address"
+        onChangeText={(text) => handleInputChange("email", text)}
       />
-
+      {errorMsg && <Text style={styles.errorMsg}>{errorMsg.email}</Text>}
       <TextInput
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#aaa"
         secureTextEntry={true}
+        onChangeText={(text) => handleInputChange("password", text)}
       />
+      {errorMsg && <Text style={styles.errorMsg}>{errorMsg.password}</Text>}
       <Link href="/(home)" style={styles.linkText}>
         Masuk
       </Link>
-      <Button text="Login" />
+      <Button handlePress={handleSubmit} text="Login" />
       <Text style={styles.link}>
         Dont't have an account?{" "}
         <Link href="/register" style={styles.linkText}>
@@ -66,7 +95,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    marginBottom: 15,
+    marginTop: 15,
     backgroundColor: "#f9f9f9",
     fontSize: 16,
   },
@@ -90,5 +119,9 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: "#19918F",
+  },
+  errorMsg: {
+    color: "red",
+    width: "100%",
   },
 });

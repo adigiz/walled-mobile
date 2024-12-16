@@ -1,9 +1,22 @@
+import Checkbox from "expo-checkbox";
+import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, TextInput, Image, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  Image,
+  Text,
+  Modal,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import Button from "../components/Button";
 import { Link } from "expo-router";
 
 export default function Register() {
+  const [isChecked, setChecked] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={styles.container}>
       <Image
@@ -37,7 +50,18 @@ export default function Register() {
         placeholder="Avatar Url"
         placeholderTextColor="#aaa"
       />
-
+      <View style={styles.tnc}>
+        <Checkbox
+          style={styles.checkbox}
+          value={isChecked}
+          onValueChange={setChecked}
+          color={isChecked ? "#4630EB" : undefined}
+        />
+        <Text style={styles.tncText}>I have read and agreee to the </Text>
+        <Link href="/tnc">
+          <Text style={styles.tncLink}>Terms and Conditions</Text>
+        </Link>
+      </View>
       <Button text="Register" />
       <Text style={styles.link}>
         Have an account?{" "}
@@ -99,5 +123,25 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: "#19918F",
+    paddingTop: 0,
+    marginTop: 0,
+  },
+  tnc: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "flext-start",
+    flexWrap: "nowrap",
+    textAlign: "left",
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  tncText: {
+    marginLeft: 10,
+    fontSize: 12,
+  },
+  tncLink: {
+    color: "#19918F",
+    fontSize: 12,
   },
 });
