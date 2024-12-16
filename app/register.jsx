@@ -1,15 +1,21 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, TextInput, Image } from "react-native";
-import Button from "./components/Button";
-import Input from "./components/Input";
+import { StyleSheet, View, TextInput, Image, Text } from "react-native";
+import Button from "../components/Button";
+import { Link } from "expo-router";
 
-export default function App() {
+export default function Register() {
   return (
     <View style={styles.container}>
       <Image
-        source={require("./assets/logo.png")}
+        source={require("../assets/logo.png")}
         style={styles.logo}
         resizeMode="stretch"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Fullname"
+        placeholderTextColor="#aaa"
       />
 
       <TextInput
@@ -26,10 +32,19 @@ export default function App() {
         secureTextEntry={true}
       />
 
-      <Input text="Notes" />
+      <TextInput
+        style={styles.input}
+        placeholder="Avatar Url"
+        placeholderTextColor="#aaa"
+      />
 
-      <Button text="Login" />
-
+      <Button text="Register" />
+      <Text style={styles.link}>
+        Have an account?{" "}
+        <Link href="/" style={styles.linkText}>
+          Login here
+        </Link>
+      </Text>
       <StatusBar style="auto" hidden />
     </View>
   );
@@ -58,7 +73,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: "#ddd",
     borderWidth: 1,
-    borderRadius: 15,
+    borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 15,
     backgroundColor: "#f9f9f9",
@@ -76,5 +91,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  link: {
+    marginTop: 10,
+    textAlign: "left",
+    width: "100%",
+  },
+  linkText: {
+    color: "#19918F",
   },
 });
