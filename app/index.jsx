@@ -16,17 +16,18 @@ export default function App() {
 
   const handleInputChange = (key, value) => {
     setForm({ ...form, [key]: value });
+
     try {
       LoginSchema.pick({ [key]: true }).parse({ [key]: value });
-      setErrors((prev) => ({ ...prev, [key]: "" })); 
+      setErrors((prev) => ({ ...prev, [key]: "" }));
     } catch (err) {
-      setErrors((prev) => ({ ...prev, [key]: err.errors[0].message })); 
+      setErrors((prev) => ({ ...prev, [key]: err.errors[0].message }));
     }
   };
 
   const handleSubmit = () => {
     try {
-      LoginSchema.parse(form);
+      LoginSchema.parse(form); 
     } catch (err) {
       const errors = {};
       err.errors.forEach((item) => {
@@ -44,8 +45,12 @@ export default function App() {
         style={styles.logo}
         resizeMode="stretch"
       />
+
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          errorMsg.email && styles.inputError,
+        ]}
         placeholder="Email"
         placeholderTextColor="#aaa"
         keyboardType="email-address"
@@ -55,7 +60,10 @@ export default function App() {
       {errorMsg.email ? <Text style={styles.errorMsg}>{errorMsg.email}</Text> : null}
 
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          errorMsg.password && styles.inputError,
+        ]}
         placeholder="Password"
         placeholderTextColor="#aaa"
         secureTextEntry={true}
@@ -102,6 +110,9 @@ const styles = StyleSheet.create({
     marginTop: 15,
     backgroundColor: "#f9f9f9",
     fontSize: 16,
+  },
+  inputError: {
+    borderColor: "red",
   },
   link: {
     marginTop: 10,
