@@ -11,27 +11,32 @@ const LoginSchema = z.object({
 });
 
 export default function App() {
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({ email: "", password: "" });
   const [errorMsg, setErrors] = useState({});
-  
-  handleInputChange = (key, value) => {
-    setErrors({ ...errorMsg, [key]: ""})
+
+  const handleInputChange = (key, value) => {
     setForm({ ...form, [key]: value });
+    try {
+      LoginSchema.pick({ [key]: true }).parse({ [key]: value });
+      setErrors((prev) => ({ ...prev, [key]: "" })); 
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, [key]: err.errors[0].message })); 
+    }
   };
 
-  handleSubmit = () => {
+  const handleSubmit = () => {
     try {
       LoginSchema.parse(form);
     } catch (err) {
-      const validation = err.errors;
       const errors = {};
-      validation.map((item) => {
+      err.errors.forEach((item) => {
         const key = item.path[0];
         errors[key] = item.message;
       });
       setErrors(errors);
     }
   };
+
   return (
     <View style={styles.container}>
       <Image
@@ -45,22 +50,26 @@ export default function App() {
         placeholderTextColor="#aaa"
         keyboardType="email-address"
         onChangeText={(text) => handleInputChange("email", text)}
+        value={form.email}
       />
-      {errorMsg && <Text style={styles.errorMsg}>{errorMsg.email}</Text>}
+      {errorMsg.email ? <Text style={styles.errorMsg}>{errorMsg.email}</Text> : null}
+
       <TextInput
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#aaa"
         secureTextEntry={true}
         onChangeText={(text) => handleInputChange("password", text)}
+        value={form.password}
       />
-      {errorMsg && <Text style={styles.errorMsg}>{errorMsg.password}</Text>}
+      {errorMsg.password ? <Text style={styles.errorMsg}>{errorMsg.password}</Text> : null}
+
       <Link href="/(home)" style={styles.linkText}>
         Masuk
       </Link>
       <Button handlePress={handleSubmit} text="Login" />
       <Text style={styles.link}>
-        Dont't have an account?{" "}
+        Don't have an account?{" "}
         <Link href="/register" style={styles.linkText}>
           Register here
         </Link>
@@ -83,11 +92,6 @@ const styles = StyleSheet.create({
     height: 57,
     marginBottom: 30,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
   input: {
     width: "100%",
     height: 50,
@@ -99,19 +103,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     fontSize: 16,
   },
-  button: {
-    backgroundColor: "#4DB6AC",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 15,
-    width: "100%",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   link: {
     marginTop: 10,
     textAlign: "left",
@@ -122,6 +113,9 @@ const styles = StyleSheet.create({
   },
   errorMsg: {
     color: "red",
+    fontSize: 12,
     width: "100%",
+    textAlign: "left",
+    marginTop: 5,
   },
 });
